@@ -5,13 +5,32 @@ This repository is the implementation of [GLocal Attention Cascading Network](ht
 ![Architecture of GLocal Attention Cascading Network](misc/architecture.jpg)
 
 ### Prerequisites
-#### 1. Download 'punkt'
+#### 1. Clone the repository
+```
+git clone https://github.com/AcousticRicky/GLACNet.git
+cd GLACNet
+mkdir models
+```
+
+#### 2. Download requirements
+```
+pip install -r requirements.txt
+```
+
+#### 3. Download 'punkt'
 ```{.python}
 nltk.download('punkt')
 ```
 
 ### Preprocessing
 
+#### 1. Download the dataset
+[VIST hompage](http://visionandlanguage.net/VIST/dataset.html)
+
+#### 2. Resize Images
+```
+python resize.py
+```
 
 ### Training & Validation
 
@@ -22,7 +41,7 @@ python train.py
 ### Evaluation
 
 ```
-python eval.py --num_model my_model_num
+python eval.py --model_num my_model_num
 ```
 The result.json file will be found in the root directory.
 
