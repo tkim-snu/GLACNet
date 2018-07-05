@@ -4,7 +4,7 @@ This repository is the implementation of [GLocal Attention Cascading Network](ht
 
 ![Architecture of GLocal Attention Cascading Network](misc/architecture.jpg)
 
-
+<br>
 ### Prerequisites
 
 ##### 1. Clone the repository
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 nltk.download('punkt')
 ```
 
-
+<br>
 ### Preprocessing
 
 ##### 1. Download the dataset
@@ -35,14 +35,14 @@ nltk.download('punkt')
 python resize.py
 ```
 
-
+<br>
 ### Training & Validation
 
 ```
 python train.py
 ```
 
-
+<br>
 ### Evaluation
 
 ```
@@ -50,7 +50,7 @@ python eval.py --model_num my_model_num
 ```
 The result.json file will be found in the root directory.
 
-
+<br>
 ### Citation
 
 ```
@@ -62,7 +62,7 @@ year = {2018}
 }
 ```
 
-
+<br>
 ### License
 
 MIT License
