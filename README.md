@@ -30,7 +30,7 @@ nltk.download('punkt')
 ### Preprocessing
 
 ##### 1. Download the dataset
-[VIST hompage](http://visionandlanguage.net/VIST/dataset.html)
+[VIST homepage](http://visionandlanguage.net/VIST/dataset.html)
 
 ##### 2. Resize Images
 ```
@@ -53,6 +53,14 @@ python train.py
 python eval.py --model_num my_model_num
 ```
 The result.json file will be found in the root directory.
+
+<br>
+
+
+### Pretrained model
+
+We provide the pretrained model.
+Please download the [link](https://drive.google.com/drive/folders/10vBPeETCKZfdOr2zenB_WlmKDcRBHmYR?usp=sharing) and move to `root/models/`.
 
 <br>
 
