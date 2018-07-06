@@ -60,7 +60,7 @@ The result.json file will be found in the root directory.
 ### Pretrained model
 
 We provide the pretrained model.
-Please download the [link](https://drive.google.com/drive/folders/10vBPeETCKZfdOr2zenB_WlmKDcRBHmYR?usp=sharing) and move to `root/models/`.
+Please download the [link](https://drive.google.com/drive/folders/10vBPeETCKZfdOr2zenB_WlmKDcRBHmYR?usp=sharing) and move to `<GLACNet root>/models/`.
 
 <br>
 
