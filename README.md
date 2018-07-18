@@ -33,8 +33,11 @@ nltk.download('punkt')
 [VIST homepage](http://visionandlanguage.net/VIST/dataset.html)
 
 ##### 2. Resize images and build vocabulary
+All the image should be resized to 256X256.
 ```
-python resize.py
+python resize.py --image_dir [train_image_dir] --output_dir [output_train_dir]
+python resize.py --image_dir [val_image_dir] --output_dir [output_val_dir]
+python resize.py --image_dir [test_image_dir] --output_dir [output_test_dir]
 python build_vocab.py
 ```
 
@@ -51,7 +54,7 @@ python train.py
 ### Evaluation
 
 ```
-python eval.py --model_num my_model_num
+python eval.py --model_num [my_model_num]
 ```
 The result.json file will be found in the root directory.
 
