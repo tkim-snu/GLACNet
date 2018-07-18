@@ -29,12 +29,10 @@ def resize_images(image_dir, output_dir, size):
                    %(i, num_images, output_dir))
 
 def main(args):
-    splits = ['train', 'val']
-    for split in splits:
-        image_dir = args.image_dir
-        output_dir = args.output_dir
-        image_size = [args.image_size, args.image_size]
-        resize_images(image_dir, output_dir, image_size)
+    image_dir = args.image_dir
+    output_dir = args.output_dir
+    image_size = [args.image_size, args.image_size]
+    resize_images(image_dir, output_dir, image_size)
 
 
 if __name__ == '__main__':
