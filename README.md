@@ -80,6 +80,6 @@ year = {2018}
 
 ### License
 
-MIT License
+MIT License<br>
 This repository refer to [pytorch tutorial](https://github.com/yunjey/pytorch-tutorial) by [yunjey](https://github.com/yunjey).
 
