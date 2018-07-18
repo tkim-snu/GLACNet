@@ -32,9 +32,10 @@ nltk.download('punkt')
 ##### 1. Download the dataset
 [VIST homepage](http://visionandlanguage.net/VIST/dataset.html)
 
-##### 2. Resize Images
+##### 2. Resize images and build vocabulary
 ```
 python resize.py
+python build_vocab.py
 ```
 
 <br>
@@ -80,3 +81,5 @@ year = {2018}
 ### License
 
 MIT License
+This repository refer to [pytorch tutorial](https://github.com/yunjey/pytorch-tutorial) by [yunjey](https://github.com/yunjey).
+
