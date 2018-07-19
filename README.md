@@ -8,8 +8,8 @@ This repository is the implementation of [GLocal Attention Cascading Network](ht
 
 
 ### Dependencies
-Python 2.7
-Pytorch >= 0.4.0
+Python 2.7<br>
+Pytorch >= 0.4.0<br>
 
 ### Prerequisites
 
