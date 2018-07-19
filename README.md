@@ -6,6 +6,11 @@ This repository is the implementation of [GLocal Attention Cascading Network](ht
 
 <br>
 
+
+### Dependencies
+Python 2.7
+Pytorch >= 0.4.0
+
 ### Prerequisites
 
 ##### 1. Clone the repository
