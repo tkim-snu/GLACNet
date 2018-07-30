@@ -59,7 +59,7 @@ python train.py
 
 ### Evaluation
 
-##### 1. Download the [evaluation tool](https://github.com/windx0303/VIST-Challenge-NAACL-2018)
+##### 1. Download the [evaluation tool](https://github.com/windx0303/VIST-Challenge-NAACL-2018) for the VIST Challenge
 ```
 git clone https://github.com/windx0303/VIST-Challenge-NAACL-2018 ../VIST-Challenge-NAACL-2018
 ```
