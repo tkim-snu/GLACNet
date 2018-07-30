@@ -45,7 +45,7 @@ def main(args):
     val_data_loader = get_loader(args.val_image_dir, args.val_sis_path, vocab, val_transform, args.batch_size, shuffle=False, num_workers=args.num_workers)
 
     encoder = EncoderStory(args.img_feature_size, args.hidden_size, args.num_layers)
-    decoder = DecoderStory(args.embed_size, args.hidden_size, len(vocab))
+    decoder = DecoderStory(args.embed_size, args.hidden_size, vocab)
 
     pretrained_epoch = 0
     if args.pretrained_epoch > 0:

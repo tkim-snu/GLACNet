@@ -69,13 +69,13 @@ class EncoderStory(nn.Module):
 
 
 class DecoderStory(nn.Module):
-    def __init__(self, embed_size, hidden_size, vocab_size):
+    def __init__(self, embed_size, hidden_size, vocab):
         super(DecoderStory, self).__init__()
 
         self.embed_size = embed_size
         self.linear = nn.Linear(hidden_size * 2, hidden_size)
         self.dropout = nn.Dropout(0.5)
-        self.rnn = DecoderRNN(embed_size, hidden_size, vocab_size, 2)
+        self.rnn = DecoderRNN(embed_size, hidden_size, 2, vocab)
         self.init_weights()
 
     def get_params(self):
@@ -101,8 +101,10 @@ class DecoderStory(nn.Module):
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, embed_size, hidden_size, vocab_size, n_layers):
+    def __init__(self, embed_size, hidden_size, n_layers, vocab):
         super(DecoderRNN, self).__init__()
+        self.vocab = vocab
+        vocab_size = len(vocab)
         self.embed = nn.Embedding(vocab_size, embed_size)
         self.dropout1 = nn.Dropout(0.1)
         self.lstm = nn.LSTM(embed_size + hidden_size, hidden_size, n_layers, batch_first=True, dropout=0.5)
@@ -111,7 +113,7 @@ class DecoderRNN(nn.Module):
         self.n_layers = n_layers
         self.hidden_size = hidden_size
         self.softmax = nn.Softmax(0)
-        self.vocab_size = vocab_size
+        
         self.brobs = []
 
         self.init_input = torch.zeros([5, 1, embed_size], dtype=torch.float32)
@@ -161,6 +163,11 @@ class DecoderRNN(nn.Module):
     def inference(self, features):
         results = []
         hidden = self.init_hidden()
+        vocab = self.vocab
+        end_vocab = vocab('<end>')
+        forbidden_list = [vocab('<pad>'), vocab('<start>'), vocab('<unk>')]
+        termination_list = [vocab('.'), vocab('?'), vocab('!')]
+        function_list = [vocab('<end>'), vocab('.'), vocab('?'), vocab('!'), vocab('the'), vocab('a'), vocab('an'), vocab('of'), vocab('am'), vocab('is'), vocab('was'), vocab('are'), vocab('were'), vocab('do'), vocab('does'), vocab('did'), vocab('have'), vocab('has'), vocab('had')]
 
         cumulated_word = []
         for feature in features:
@@ -169,7 +176,7 @@ class DecoderRNN(nn.Module):
             predicted = torch.tensor([1], dtype=torch.long).cuda()
             lstm_input = torch.cat((feature, self.embed(predicted).unsqueeze(1)), 2)
             sampled_ids = [predicted,]
-            forbidden_list = [0, 1, 3]
+           
             count = 0
             prob_sum = 1.0
 
@@ -177,8 +184,8 @@ class DecoderRNN(nn.Module):
                 outputs, hidden = self.lstm(lstm_input, hidden)
                 outputs = self.linear(outputs.squeeze(1))
 
-                if predicted != 139 and predicted != 9093 and predicted != 8558:
-                    outputs[0][2] = -100.0
+                if predicted not in termination_list:
+                    outputs[0][end_vocab] = -100.0
 
                 for forbidden in forbidden_list:
                     outputs[0][forbidden] = -100.0
@@ -190,7 +197,7 @@ class DecoderRNN(nn.Module):
                 prob_res = self.softmax(prob_res)
 
                 for word, cnt in cumulated_counter.items():
-                    if cnt > 0 and word != 139 and word != 9093 and word != 8558 and word != 2 and word != 4439 and word != 5301 and word != 11734 and word != 7963 and word != 6505:
+                    if cnt > 0 and word not in function_list:
                         prob_res[word] = prob_res[word] / (1.0 + cnt * 5.0)
                 prob_res = prob_res * (1.0 / prob_res.sum())
 

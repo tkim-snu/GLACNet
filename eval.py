@@ -83,7 +83,7 @@ with open(args.vocab_path, 'rb') as f:
 data_loader = get_loader(image_dir, sis_path, vocab, transform, args.batch_size, shuffle=False, num_workers=args.num_workers)
 
 encoder = EncoderStory(args.img_feature_size, args.hidden_size, args.num_layers)
-decoder = DecoderStory(args.embed_size, args.hidden_size, len(vocab))
+decoder = DecoderStory(args.embed_size, args.hidden_size, vocab)
 
 encoder.load_state_dict(torch.load(encoder_path))
 decoder.load_state_dict(torch.load(decoder_path))
