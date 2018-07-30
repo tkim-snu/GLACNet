@@ -39,7 +39,7 @@ nltk.download('punkt')
 [VIST homepage](http://visionandlanguage.net/VIST/dataset.html)
 
 ##### 2. Resize images and build vocabulary
-All the images should be resized to 256X256.
+All the images should be resized to 256x256.
 ```
 python resize.py --image_dir [train_image_dir] --output_dir [output_train_dir]
 python resize.py --image_dir [val_image_dir] --output_dir [output_val_dir]
