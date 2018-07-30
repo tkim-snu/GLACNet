@@ -28,7 +28,10 @@ pip install -r requirements.txt
 
 ##### 3. Download 'punkt'
 ```{.python}
-nltk.download('punkt')
+python
+>>> import nltk
+>>> nltk.download('punkt')
+>>> exit()
 ```
 
 <br>
