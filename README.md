@@ -19,7 +19,6 @@ Python 2.7<br>
 ```
 git clone https://github.com/AcousticRicky/GLACNet.git
 cd GLACNet
-mkdir models
 ```
 
 ##### 2. Download requirements
