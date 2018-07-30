@@ -44,6 +44,21 @@ parser.add_argument('--model_num', type=int , default=0,
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--num_workers', type=int, default=0)
 
+parser.add_argument('--vocab_path', type=str, default='./models/vocab.pkl',
+                    help='path for vocabulary wrapper')
+
+parser.add_argument('--img_feature_size', type=int , default=1024 ,
+                    help='dimension of image feature')
+parser.add_argument('--embed_size', type=int , default=256 ,
+                    help='dimension of word embedding vectors')
+parser.add_argument('--hidden_size', type=int , default=1024 ,
+                    help='dimension of lstm hidden states')
+parser.add_argument('--num_layers', type=int , default=2 ,
+                    help='number of layers in lstm')
+
+
+
+
 args = parser.parse_args()
 
 
@@ -54,11 +69,7 @@ result_path = args.result_path
 embed_path = './models/embed-' + str(args.model_num) + '.pkl'
 encoder_path = './models/encoder-' + str(args.model_num) + '.pkl'
 decoder_path = './models/decoder-' + str(args.model_num) + '.pkl'
-vocab_path = './data/vocab.pkl'
 
-embed_size = 256
-hidden_size = 1024
-num_layers = 2
 
 transform = transforms.Compose([
         transforms.Resize(args.image_size, interpolation=Image.LANCZOS),
@@ -66,13 +77,13 @@ transform = transforms.Compose([
         transforms.Normalize((0.485, 0.456, 0.406),
                             (0.229, 0.224, 0.225))])
 
-with open(vocab_path, 'rb') as f:
+with open(args.vocab_path, 'rb') as f:
     vocab = pickle.load(f)
 
 data_loader = get_loader(image_dir, sis_path, vocab, transform, args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-encoder = EncoderStory(1024, hidden_size, num_layers)
-decoder = DecoderStory(embed_size, hidden_size, len(vocab))
+encoder = EncoderStory(args.img_feature_size, args.hidden_size, args.num_layers)
+decoder = DecoderStory(args.embed_size, args.hidden_size, len(vocab))
 
 encoder.load_state_dict(torch.load(encoder_path))
 decoder.load_state_dict(torch.load(decoder_path))

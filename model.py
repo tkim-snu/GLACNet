@@ -172,7 +172,7 @@ class DecoderRNN(nn.Module):
             forbidden_list = [0, 1, 3]
             count = 0
             prob_sum = 1.0
-            
+
             for i in range(50):
                 outputs, hidden = self.lstm(lstm_input, hidden)
                 outputs = self.linear(outputs.squeeze(1))

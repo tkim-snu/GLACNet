@@ -44,7 +44,7 @@ def main(args):
     train_data_loader = get_loader(args.train_image_dir, args.train_sis_path, vocab, train_transform, args.batch_size, shuffle=True, num_workers=args.num_workers)
     val_data_loader = get_loader(args.val_image_dir, args.val_sis_path, vocab, val_transform, args.batch_size, shuffle=False, num_workers=args.num_workers)
 
-    encoder = EncoderStory(1024, args.hidden_size, args.num_layers)
+    encoder = EncoderStory(args.img_feature_size, args.hidden_size, args.num_layers)
     decoder = DecoderStory(args.embed_size, args.hidden_size, len(vocab))
 
     pretrained_epoch = 0
@@ -158,7 +158,7 @@ if __name__ == '__main__':
                         help='path for saving trained models')
     parser.add_argument('--image_size', type=int, default=224 ,
                         help='size for input images')
-    parser.add_argument('--vocab_path', type=str, default='./data/vocab.pkl',
+    parser.add_argument('--vocab_path', type=str, default='./models/vocab.pkl',
                         help='path for vocabulary wrapper')
     parser.add_argument('--train_image_dir', type=str, default='./data/train' ,
                         help='directory for resized train images')
@@ -172,7 +172,8 @@ if __name__ == '__main__':
                         help='path for val sis json file')
     parser.add_argument('--log_step', type=int , default=20,
                         help='step size for prining log info')
-
+    parser.add_argument('--img_feature_size', type=int , default=1024 ,
+                        help='dimension of image feature')
     parser.add_argument('--embed_size', type=int , default=256 ,
                         help='dimension of word embedding vectors')
     parser.add_argument('--hidden_size', type=int , default=1024 ,
