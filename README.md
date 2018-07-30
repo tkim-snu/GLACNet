@@ -26,7 +26,7 @@ cd GLACNet
 pip install -r requirements.txt
 ```
 
-##### 3. Download 'punkt'
+##### 3. Download sentence tokenizer
 ```{.python}
 python
 >>> import nltk
