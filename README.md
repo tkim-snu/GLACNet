@@ -78,8 +78,8 @@ Please download the [link](https://drive.google.com/drive/folders/10vBPeETCKZfdO
 
 ```
 @article{Kim2018GLAC,
-title = {GLAC Net: GLocal Attention Cascading Networks for Multi-image Cued Story Generation},
-author = {Taehyeong Kim and Min-Oh Heo and Seonil Son and Kyoung-Wha Park and Byoung-Tak Zhang},
+title={GLAC Net: GLocal Attention Cascading Networks for Multi-image Cued Story Generation},
+author={Taehyeong Kim and Min-Oh Heo and Seonil Son and Kyoung-Wha Park and Byoung-Tak Zhang},
 journal={CoRR},
 year={2018},
 volume={abs/1805.10973}
