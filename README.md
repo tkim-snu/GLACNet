@@ -64,12 +64,12 @@ python train.py
 
 ##### 1. Download the [evaluation tool (METEOR score)](https://github.com/windx0303/VIST-Challenge-NAACL-2018) for the VIST Challenge
 ```
-sudo apt-get install default-jdk
+git clone https://github.com/windx0303/VIST-Challenge-NAACL-2018 ../VIST-Challenge-NAACL-2018
 ```
 
-##### 2. Install java
+##### 2. Install Java
 ```
-git clone https://github.com/windx0303/VIST-Challenge-NAACL-2018 ../VIST-Challenge-NAACL-2018
+sudo apt-get install default-jdk
 ```
 
 ##### 3. Run eval.py script
