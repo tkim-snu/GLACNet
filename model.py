@@ -167,7 +167,7 @@ class DecoderRNN(nn.Module):
         end_vocab = vocab('<end>')
         forbidden_list = [vocab('<pad>'), vocab('<start>'), vocab('<unk>')]
         termination_list = [vocab('.'), vocab('?'), vocab('!')]
-        function_list = [vocab('<end>'), vocab('.'), vocab('?'), vocab('!'), vocab('the'), vocab('a'), vocab('an'), vocab('of'), vocab('am'), vocab('is'), vocab('was'), vocab('are'), vocab('were'), vocab('do'), vocab('does'), vocab('did'), vocab('have'), vocab('has'), vocab('had')]
+        function_list = [vocab('<end>'), vocab('.'), vocab('?'), vocab('!'), vocab('the'), vocab('a'), vocab('an'), vocab('of'), vocab('am'), vocab('is'), vocab('was'), vocab('are'), vocab('were'), vocab('do'), vocab('does'), vocab('did'), vocab('have'), vocab('has'), vocab('had'), vocab('and'), vocab('or'), vocab('they'), vocab('he'), vocab('she'), vocab('them'), vocab('him'), vocab('her'), vocab('not')]
 
         cumulated_word = []
         for feature in features:
@@ -176,7 +176,7 @@ class DecoderRNN(nn.Module):
             predicted = torch.tensor([1], dtype=torch.long).cuda()
             lstm_input = torch.cat((feature, self.embed(predicted).unsqueeze(1)), 2)
             sampled_ids = [predicted,]
-           
+
             count = 0
             prob_sum = 1.0
 
