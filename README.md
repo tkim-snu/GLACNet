@@ -67,7 +67,12 @@ python train.py
 git clone https://github.com/windx0303/VIST-Challenge-NAACL-2018 ../VIST-Challenge-NAACL-2018
 ```
 
-##### 2. Run eval.py script
+##### 2. Install Java
+```
+sudo apt-get install default-jdk
+```
+
+##### 3. Run eval.py script
 ```
 python eval.py --model_num [my_model_num]
 ```
