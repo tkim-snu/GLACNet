@@ -65,12 +65,8 @@ class EncoderStory(nn.Module):
         output, hidden = self.lstm(cnn_features.view(data_size[0], data_size[1], -1))
         output = torch.cat((cnn_features.view(data_size[0], data_size[1], -1), output), 2)
         output = F.dropout(output, 0.5)
-        output = F.relu(output)
         output = self.linear(output)
-        output = F.dropout(output, 0.5)
-        output = F.relu(output)
         output = self.bn(output.contiguous().view(-1, self.hidden_size * self.n_layers)).view(data_size[0], data_size[1], -1)
-
         return output, hidden
 
 
@@ -92,8 +88,8 @@ class DecoderStory(nn.Module):
 
     def forward(self, story_feature, captions, lengths):
         story_feature = self.linear(story_feature)
-        story_feature = F.relu(story_feature)
         story_feature = F.dropout(story_feature, 0.5)
+        story_feature = F.relu(story_feature)
         result = self.rnn(story_feature, captions, lengths)
         return result
 
@@ -141,11 +137,12 @@ class DecoderRNN(nn.Module):
         return hidden
 
     def init_weights(self):
-        self.linear.weight.data.uniform_(-0.1, 0.1)
-        self.linear.bias.data.fill_(0)
+        self.linear.weight.data.normal_(0.0, 0.02)
+        self.linear.bias.data.fill_(0) 
 
     def forward(self, features, captions, lengths):
         embeddings = self.embed(captions)
+        embeddings = F.dropout(embeddings, 0.1)
         features = features.unsqueeze(1).expand(-1, np.amax(lengths), -1)
         embeddings = torch.cat((features, embeddings), 2)
 

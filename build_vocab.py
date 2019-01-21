@@ -73,7 +73,7 @@ if __name__ == '__main__':
                         help='path for train sis file')
     parser.add_argument('--vocab_path', type=str, default='./models/vocab.pkl',
                         help='path for saving vocabulary wrapper')
-    parser.add_argument('--threshold', type=int, default=4,
+    parser.add_argument('--threshold', type=int, default=10,
                         help='minimum word count threshold')
     args = parser.parse_args()
     main(args)
