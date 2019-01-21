@@ -20,7 +20,6 @@ class EncoderCNN(nn.Module):
         for param in self.resnet.parameters():
             param.requires_grad = False
 
-        self.dropout = nn.Dropout(0.5)
         self.linear = nn.Linear(resnet.fc.in_features, target_size)
         self.bn = nn.BatchNorm1d(target_size, momentum=0.01)
         self.init_weights()
@@ -36,7 +35,6 @@ class EncoderCNN(nn.Module):
         features = self.resnet(images)
         features = Variable(features.data)
         features = features.view(features.size(0), -1)
-        features = self.dropout(features)
         features = self.linear(features)
         features = self.bn(features)
         return features
@@ -50,21 +48,29 @@ class EncoderStory(nn.Module):
         self.n_layers = n_layers
         self.cnn = EncoderCNN(img_feature_size)
         self.lstm = nn.LSTM(img_feature_size, hidden_size, n_layers, batch_first=True, bidirectional=True, dropout=0.5)
-        self.dropout = nn.Dropout(0.5)
         self.linear = nn.Linear(hidden_size * 2 + img_feature_size, hidden_size * 2)
         self.bn = nn.BatchNorm1d(hidden_size * 2, momentum=0.01)
+        self.init_weights()
 
     def get_params(self):
         return self.cnn.get_params() + list(self.lstm.parameters()) + list(self.linear.parameters()) + list(self.bn.parameters())
+
+    def init_weights(self):
+        self.linear.weight.data.normal_(0.0, 0.02)
+        self.linear.bias.data.fill_(0)
 
     def forward(self, story_images):
         data_size = story_images.size()
         cnn_features = self.cnn(story_images.view(-1, data_size[2], data_size[3], data_size[4]))
         output, hidden = self.lstm(cnn_features.view(data_size[0], data_size[1], -1))
         output = torch.cat((cnn_features.view(data_size[0], data_size[1], -1), output), 2)
-        output = self.dropout(output)
+        output = F.dropout(output, 0.5)
+        output = F.relu(output)
         output = self.linear(output)
+        output = F.dropout(output, 0.5)
+        output = F.relu(output)
         output = self.bn(output.contiguous().view(-1, self.hidden_size * self.n_layers)).view(data_size[0], data_size[1], -1)
+
         return output, hidden
 
 
@@ -74,7 +80,6 @@ class DecoderStory(nn.Module):
 
         self.embed_size = embed_size
         self.linear = nn.Linear(hidden_size * 2, hidden_size)
-        self.dropout = nn.Dropout(0.5)
         self.rnn = DecoderRNN(embed_size, hidden_size, 2, vocab)
         self.init_weights()
 
@@ -86,15 +91,15 @@ class DecoderStory(nn.Module):
         self.linear.bias.data.fill_(0)
 
     def forward(self, story_feature, captions, lengths):
-        story_feature = self.dropout(story_feature)
         story_feature = self.linear(story_feature)
         story_feature = F.relu(story_feature)
+        story_feature = F.dropout(story_feature, 0.5)
         result = self.rnn(story_feature, captions, lengths)
         return result
 
     def inference(self, story_feature):
-        story_feature = self.dropout(story_feature)
         story_feature = self.linear(story_feature)
+        story_feature = F.dropout(story_feature, 0.5)
         story_feature = F.relu(story_feature)
         result = self.rnn.inference(story_feature)
         return result
@@ -106,14 +111,12 @@ class DecoderRNN(nn.Module):
         self.vocab = vocab
         vocab_size = len(vocab)
         self.embed = nn.Embedding(vocab_size, embed_size)
-        self.dropout1 = nn.Dropout(0.1)
         self.lstm = nn.LSTM(embed_size + hidden_size, hidden_size, n_layers, batch_first=True, dropout=0.5)
-        self.dropout2 = nn.Dropout(0.5)
         self.linear = nn.Linear(hidden_size, vocab_size)
         self.n_layers = n_layers
         self.hidden_size = hidden_size
         self.softmax = nn.Softmax(0)
-        
+
         self.brobs = []
 
         self.init_input = torch.zeros([5, 1, embed_size], dtype=torch.float32)
@@ -143,7 +146,6 @@ class DecoderRNN(nn.Module):
 
     def forward(self, features, captions, lengths):
         embeddings = self.embed(captions)
-        embeddings = self.dropout1(embeddings)
         features = features.unsqueeze(1).expand(-1, np.amax(lengths), -1)
         embeddings = torch.cat((features, embeddings), 2)
 
@@ -152,7 +154,7 @@ class DecoderRNN(nn.Module):
         for i, length in enumerate(lengths):
             lstm_input = embeddings[i][0:length - 1]
             output, hidden = self.lstm(lstm_input.unsqueeze(0), hidden)
-            output = self.dropout2(output)
+            output = F.dropout(output, 0.5)
             output = self.linear(output[0])
             output = torch.cat((self.start_vec, output), 0)
             outputs.append(output)
@@ -195,7 +197,6 @@ class DecoderRNN(nn.Module):
 
                 prob_res = outputs[0]
                 prob_res = self.softmax(prob_res)
-
                 for word, cnt in cumulated_counter.items():
                     if cnt > 0 and word not in function_list:
                         prob_res[word] = prob_res[word] / (1.0 + cnt * 5.0)
