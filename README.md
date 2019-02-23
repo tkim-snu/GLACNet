@@ -9,7 +9,7 @@ This repository is the implementation of [GLAC Net: GLocal Attention Cascading N
 
 ### Dependencies
 Python 2.7<br>
-[Pytorch](https://pytorch.org) >= 0.4.0
+[Pytorch](https://pytorch.org) == 0.4.0
 
 <br>
 
