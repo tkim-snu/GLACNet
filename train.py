@@ -148,7 +148,7 @@ def main(args):
         overfit_warn = overfit_warn + 1 if (min_avg_loss < avg_loss) else 0
         min_avg_loss = min(min_avg_loss, avg_loss)
 
-        if overfit_warn >= 10:
+        if overfit_warn >= 5:
             break
 
 

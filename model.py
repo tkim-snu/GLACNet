@@ -49,6 +49,7 @@ class EncoderStory(nn.Module):
         self.cnn = EncoderCNN(img_feature_size)
         self.lstm = nn.LSTM(img_feature_size, hidden_size, n_layers, batch_first=True, bidirectional=True, dropout=0.5)
         self.linear = nn.Linear(hidden_size * 2 + img_feature_size, hidden_size * 2)
+        self.dropout = nn.Dropout(p=0.5)
         self.bn = nn.BatchNorm1d(hidden_size * 2, momentum=0.01)
         self.init_weights()
 
@@ -61,13 +62,14 @@ class EncoderStory(nn.Module):
 
     def forward(self, story_images):
         data_size = story_images.size()
-        cnn_features = self.cnn(story_images.view(-1, data_size[2], data_size[3], data_size[4]))
-        output, hidden = self.lstm(cnn_features.view(data_size[0], data_size[1], -1))
-        output = torch.cat((cnn_features.view(data_size[0], data_size[1], -1), output), 2)
-        output = F.dropout(output, 0.5)
-        output = self.linear(output)
-        output = self.bn(output.contiguous().view(-1, self.hidden_size * self.n_layers)).view(data_size[0], data_size[1], -1)
-        return output, hidden
+        local_cnn = self.cnn(story_images.view(-1, data_size[2], data_size[3], data_size[4]))
+        global_rnn, (hn, cn) = self.lstm(local_cnn.view(data_size[0], data_size[1], -1))
+        glocal = torch.cat((local_cnn.view(data_size[0], data_size[1], -1), global_rnn), 2)
+        output = self.linear(glocal)
+        output = self.dropout(output)
+        output = self.bn(output.contiguous().view(-1, self.hidden_size * 2)).view(data_size[0], data_size[1], -1)
+
+        return output, (hn, cn)
 
 
 class DecoderStory(nn.Module):
@@ -76,6 +78,7 @@ class DecoderStory(nn.Module):
 
         self.embed_size = embed_size
         self.linear = nn.Linear(hidden_size * 2, hidden_size)
+        self.dropout = nn.Dropout(p=0.5)
         self.rnn = DecoderRNN(embed_size, hidden_size, 2, vocab)
         self.init_weights()
 
@@ -88,14 +91,13 @@ class DecoderStory(nn.Module):
 
     def forward(self, story_feature, captions, lengths):
         story_feature = self.linear(story_feature)
-        story_feature = F.dropout(story_feature, 0.5)
+        story_feature = self.dropout(story_feature)
         story_feature = F.relu(story_feature)
         result = self.rnn(story_feature, captions, lengths)
         return result
 
     def inference(self, story_feature):
         story_feature = self.linear(story_feature)
-        story_feature = F.dropout(story_feature, 0.5)
         story_feature = F.relu(story_feature)
         result = self.rnn.inference(story_feature)
         return result
@@ -107,7 +109,9 @@ class DecoderRNN(nn.Module):
         self.vocab = vocab
         vocab_size = len(vocab)
         self.embed = nn.Embedding(vocab_size, embed_size)
+        self.dropout1 = nn.Dropout(p=0.1)
         self.lstm = nn.LSTM(embed_size + hidden_size, hidden_size, n_layers, batch_first=True, dropout=0.5)
+        self.dropout2 = nn.Dropout(p=0.5)
         self.linear = nn.Linear(hidden_size, vocab_size)
         self.n_layers = n_layers
         self.hidden_size = hidden_size
@@ -131,10 +135,17 @@ class DecoderRNN(nn.Module):
         return list(self.parameters())
 
     def init_hidden(self):
-        hidden = torch.zeros(2, self.n_layers, 1, self.hidden_size)
+        h0 = torch.zeros(1 * self.n_layers, 1, self.hidden_size)
+        c0 = torch.zeros(1 * self.n_layers, 1, self.hidden_size)
+
+        h0 = torch.zeros(1 * self.n_layers, 1, self.hidden_size)
+        c0 = torch.zeros(1 * self.n_layers, 1, self.hidden_size)
+        
         if torch.cuda.is_available():
-            hidden = hidden.cuda()
-        return hidden
+            h0 = h0.cuda()
+            c0 = c0.cuda()
+            
+        return (h0, c0)
 
     def init_weights(self):
         self.linear.weight.data.normal_(0.0, 0.02)
@@ -142,16 +153,17 @@ class DecoderRNN(nn.Module):
 
     def forward(self, features, captions, lengths):
         embeddings = self.embed(captions)
-        embeddings = F.dropout(embeddings, 0.1)
+        embeddings = self.dropout1(embeddings)
         features = features.unsqueeze(1).expand(-1, np.amax(lengths), -1)
         embeddings = torch.cat((features, embeddings), 2)
 
         outputs = []
-        hidden = self.init_hidden()
+        (hn, cn) = self.init_hidden()
+
         for i, length in enumerate(lengths):
             lstm_input = embeddings[i][0:length - 1]
-            output, hidden = self.lstm(lstm_input.unsqueeze(0), hidden)
-            output = F.dropout(output, 0.5)
+            output, (hn, cn) = self.lstm(lstm_input.unsqueeze(0), (hn, cn))
+            output = self.dropout2(output)
             output = self.linear(output[0])
             output = torch.cat((self.start_vec, output), 0)
             outputs.append(output)
@@ -161,12 +173,12 @@ class DecoderRNN(nn.Module):
 
     def inference(self, features):
         results = []
-        hidden = self.init_hidden()
+        (hn, cn) = self.init_hidden()
         vocab = self.vocab
         end_vocab = vocab('<end>')
         forbidden_list = [vocab('<pad>'), vocab('<start>'), vocab('<unk>')]
         termination_list = [vocab('.'), vocab('?'), vocab('!')]
-        function_list = [vocab('<end>'), vocab('.'), vocab('?'), vocab('!'), vocab('the'), vocab('a'), vocab('an'), vocab('of'), vocab('am'), vocab('is'), vocab('was'), vocab('are'), vocab('were'), vocab('do'), vocab('does'), vocab('did'), vocab('have'), vocab('has'), vocab('had'), vocab('and'), vocab('or'), vocab('they'), vocab('he'), vocab('she'), vocab('them'), vocab('him'), vocab('her'), vocab('not')]
+        function_list = [vocab('<end>'), vocab('.'), vocab('?'), vocab('!'), vocab('a'), vocab('an'), vocab('am'), vocab('is'), vocab('was'), vocab('are'), vocab('were'), vocab('do'), vocab('does'), vocab('did')]
 
         cumulated_word = []
         for feature in features:
@@ -180,7 +192,7 @@ class DecoderRNN(nn.Module):
             prob_sum = 1.0
 
             for i in range(50):
-                outputs, hidden = self.lstm(lstm_input, hidden)
+                outputs, (hn, cn) = self.lstm(lstm_input, (hn, cn))
                 outputs = self.linear(outputs.squeeze(1))
 
                 if predicted not in termination_list:
