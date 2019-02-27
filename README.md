@@ -8,8 +8,8 @@ This repository is the implementation of [GLAC Net: GLocal Attention Cascading N
 
 
 ### Dependencies
-Python 2.7<br>
-[Pytorch](https://pytorch.org) 0.4.0
+Python 3.6 or 2.7<br>
+[Pytorch](https://pytorch.org) >= 1.0.0
 
 <br>
 
@@ -23,12 +23,12 @@ cd GLACNet
 
 ##### 2. Download requirements
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ##### 3. Download sentence tokenizer
 ```{.python}
-python
+python3
 >>> import nltk
 >>> nltk.download('punkt')
 >>> exit()
@@ -44,10 +44,10 @@ python
 ##### 2. Resize images and build vocabulary
 All the images should be resized to 256x256.
 ```
-python resize.py --image_dir [train_image_dir] --output_dir [output_train_dir]
-python resize.py --image_dir [val_image_dir] --output_dir [output_val_dir]
-python resize.py --image_dir [test_image_dir] --output_dir [output_test_dir]
-python build_vocab.py
+python3 resize.py --image_dir [train_image_dir] --output_dir [output_train_dir]
+python3 resize.py --image_dir [val_image_dir] --output_dir [output_val_dir]
+python3 resize.py --image_dir [test_image_dir] --output_dir [output_test_dir]
+python3 build_vocab.py
 ```
 
 <br>
@@ -55,7 +55,7 @@ python build_vocab.py
 ### Training & Validation
 
 ```
-python train.py
+python3 train.py
 ```
 
 <br>
@@ -69,12 +69,12 @@ git clone https://github.com/windx0303/VIST-Challenge-NAACL-2018 ../VIST-Challen
 
 ##### 2. Install Java
 ```
-sudo apt-get install default-jdk
+sudo apt install default-jdk
 ```
 
 ##### 3. Run eval.py script
 ```
-python eval.py --model_num [my_model_num]
+python3 eval.py --model_num [my_model_num]
 ```
 The result.json file will be found in the root directory.
 
@@ -83,7 +83,7 @@ The result.json file will be found in the root directory.
 
 ### Pretrained model
 
-We provide the pretrained model.
+We provide the pretrained model(for Python3).
 Please download the [link](https://drive.google.com/drive/folders/10vBPeETCKZfdOr2zenB_WlmKDcRBHmYR?usp=sharing) and move to `<GLACNet root>/models/`.
 
 <br>
