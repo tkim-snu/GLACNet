@@ -1,6 +1,6 @@
 # GLAC Net: GLocal Attention Cascading Network
 
-This repository is the implementation of [GLAC Net: GLocal Attention Cascading Network](https://arxiv.org/abs/1805.10973) for the [Visual Storytelling Challenge 2018](http://www.visionandlanguage.net/workshop2018) as a team SnuBiVtt. Our model got the highest score in the human evaluation of the challenge.
+This repository is the implementation of [GLAC Net: GLocal Attention Cascading Network](https://arxiv.org/abs/1805.10973) for the [Visual Storytelling Challenge 2018](http://www.visionandlanguage.net/workshop2018) as a team SnuBiVtt. [Our model got the highest score in the human evaluation of the challenge.](http://aclweb.org/anthology/W18-1500)
 
 ![Architecture of GLocal Attention Cascading Network](misc/architecture.jpg)
 
@@ -9,7 +9,7 @@ This repository is the implementation of [GLAC Net: GLocal Attention Cascading N
 
 ### Dependencies
 Python 2.7<br>
-[Pytorch](https://pytorch.org) >= 0.4.0
+[Pytorch](https://pytorch.org) 0.4.0
 
 <br>
 
